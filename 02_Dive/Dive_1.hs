@@ -3,7 +3,7 @@ module Dive_1 where
 parse :: String -> (Int, Int)
 parse s = let [dir,a] = words s; amount = read a
           in  case dir of "forward" -> (amount, 0)
-                          "up"      -> (0, negate amount)
+                          "up"      -> (0, - amount)
                           "down"    -> (0, amount)
 
 main = interact (show . prod . dive . map parse . lines)
