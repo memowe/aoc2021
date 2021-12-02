@@ -1,5 +1,3 @@
-module Dive_2 where
-
 data Mov    = Trn | Fwd
 data Cmd    = Cmd Mov Int
 type State  = (Int, Int, Int)

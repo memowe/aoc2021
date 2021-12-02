@@ -1,5 +1,3 @@
-module Dive_1 where
-
 parse :: String -> (Int, Int)
 parse s = let [dir,a] = words s; amount = read a
           in  case dir of "forward" -> (amount, 0)

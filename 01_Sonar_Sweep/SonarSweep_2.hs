@@ -1,5 +1,3 @@
-module SonarSweep_2 where
-
 import Data.List
 
 main = interact $ show . sonarSweep . map read . lines
