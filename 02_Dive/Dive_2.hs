@@ -12,6 +12,6 @@ goto :: State -> Cmd -> State
 goto (x,y,aim) (Cmd Fwd fwd) = (x + fwd, y + aim * fwd, aim)
 goto (x,y,aim) (Cmd Trn trn) = (x, y, aim + trn)
 
-main = interact (show . prod . dive . map parse . lines)
+main = interact $ show . prod . dive . map parse . lines
   where dive          = foldl goto (0,0,0)
         prod (x,y,_)  = x * y

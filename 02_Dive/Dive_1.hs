@@ -4,7 +4,7 @@ parse s = let [dir,a] = words s; amount = read a
                           "up"      -> (0, - amount)
                           "down"    -> (0, amount)
 
-main = interact (show . prod . dive . map parse . lines)
+main = interact $ show . prod . dive . map parse . lines
   where dive                = foldl goto (0,0)
         prod (x,y)          = x * y
         goto (x,y) (px,py)  = (px + x, py + y)

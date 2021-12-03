@@ -5,4 +5,3 @@ main = interact $ show . sonarSweep . map read . lines
         sonarSweep  = sum . map fromEnum . goingUp . map sum . window 3
         goingUp     = zipWith (<) <*> tail
         window size = filter ((== size) . length) . map (take size) . tails
-

@@ -1,7 +1,7 @@
 import Data.List
 import Data.Function
 
-main = interact (show . combine . democracy . map toBools . lines)
+main = interact $ show . combine . democracy . map toBools . lines
   where toBools   = map (== '1')
         democracy = map most . transpose
         most      = (>) <$> sum . map fromEnum <*> (`div` 2) . length
