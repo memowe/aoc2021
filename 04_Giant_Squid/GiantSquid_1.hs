@@ -7,13 +7,6 @@ import Data.Function
 newtype Position a = Position { value :: Either a a }
 newtype Board a    = Board    { rows :: [[Position a]] }
 
-instance Show a => Show (Position a) where
-  show (Position (Left p))  = " " ++ show p ++ " "
-  show (Position (Right s)) = "[" ++ show s ++ "]"
-
-instance Show a => Show (Board a) where
-  show = unlines . map (unwords . (show <$>)) . rows
-
 createBoard :: [[a]] -> Board a
 createBoard = Board . map (Position . Left <$>)
 
