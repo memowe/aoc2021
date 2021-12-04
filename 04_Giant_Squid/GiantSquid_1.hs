@@ -1,4 +1,5 @@
 import Data.Either
+import Data.Maybe
 import Data.List
 import Data.List.Split
 import Data.Function
@@ -32,10 +33,18 @@ score last board  | hasWon board  = Just $ last * sum (unmarked board)
                   | otherwise     = Nothing
   where unmarked = concatMap ((fromLeft 0 . value) <$>) . rows
 
+firstWinningScore :: (Eq a, Num a) => [a] -> [Board a] -> a
+firstWinningScore input boards =
+  let moves       = scanl draw (boards, 0) input
+      (bs, last)  = fromJust (find (any hasWon . fst) moves)
+      winner      = fromJust (find hasWon bs)
+  in  fromJust $ score last winner
+  where draw (bs,_) m = (map (select m) bs, m)
+
 parse :: String -> ([Int], [Board Int])
 parse s = let (is:bs) = linesBy null (lines s)
               input   = map read (splitOn "," (head is))
               boards  = map (createBoard . map ((read <$>) . words)) bs
           in  (input, boards)
 
-main = interact $ show . parse
+main = interact $ show . uncurry firstWinningScore . parse
