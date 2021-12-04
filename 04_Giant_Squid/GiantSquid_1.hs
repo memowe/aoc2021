@@ -30,7 +30,10 @@ select val = Board . map (spos val <$>) . rows
           | otherwise = p
         spos _ p = p
 
-
+score :: Num a => a -> Board a -> Maybe a
+score last board  | hasWon board  = Just $ last * sum (unmarked board)
+                  | otherwise     = Nothing
+  where unmarked = concatMap ((fromLeft 0 . value) <$>) . rows
 
 parse :: String -> ([Int], [Board Int])
 parse s = let (is:bs) = linesBy null (lines s)
