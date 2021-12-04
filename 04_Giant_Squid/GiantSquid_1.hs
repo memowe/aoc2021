@@ -31,3 +31,13 @@ selectPos _ p = p
 
 select :: Eq a => a -> Board a -> Board a
 select val = Board . map (map (selectPos val)) . rows
+
+
+
+parse :: String -> ([Int], [Board Int])
+parse s = let (is:bs) = linesBy null (lines s)
+              input   = map read (splitOn "," (head is))
+              boards  = map (createBoard . map ((read <$>) . words)) bs
+          in  (input, boards)
+
+main = interact $ show . parse
