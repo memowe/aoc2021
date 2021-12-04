@@ -23,14 +23,12 @@ hasWon :: Board a -> Bool
 hasWon = ((||) `on` any rights) <$> rows <*> cols
   where rights = all (isRight . value)
 
-selectPos :: Eq a => a -> Position a -> Position a
-selectPos val p@(Position (Left v))
-  | v == val  = Position (Right v)
-  | otherwise = p
-selectPos _ p = p
-
 select :: Eq a => a -> Board a -> Board a
-select val = Board . map (map (selectPos val)) . rows
+select val = Board . map (spos val <$>) . rows
+  where spos val p@(Position (Left v))
+          | v == val  = Position (Right v)
+          | otherwise = p
+        spos _ p = p
 
 
 
