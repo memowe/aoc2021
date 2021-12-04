@@ -1,8 +1,7 @@
-module Board where
+module GiantSquid.Board where
 
 import Data.Either
 import Data.List
-import Data.List.Split
 import Data.Function
 
 newtype Position a = Position { value :: Either a a }
@@ -21,8 +20,3 @@ select val = Board . map (spos <$>) . rows
           | v == val  = Position (Right v)
           | otherwise = p
         spos p = p
-
-parse :: String -> ([Int], [Board Int])
-parse = ((,) <$> toInput <*> toBoards) . splitWhen null . lines
-  where toInput   = map read . splitOn "," . head . head
-        toBoards  = map (createBoard . map ((read <$>) . words)) . tail

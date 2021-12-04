@@ -1,4 +1,5 @@
-import Board
+import GiantSquid.Board
+import GiantSquid.Parse
 import Data.Either
 import Data.Maybe
 import Data.List
@@ -16,4 +17,4 @@ lastWinningScore input boards =
         unmarked      = concatMap ((fromLeft 0 . value) <$>) . rows
 
 main :: IO ()
-main = interact $ show . uncurry lastWinningScore . parse
+main = interact $ show . uncurry lastWinningScore . parseInputBoards
