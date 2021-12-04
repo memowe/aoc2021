@@ -13,14 +13,11 @@ instance Show a => Show (Position a) where
 instance Show a => Show (Board a) where
   show = unlines . map (unwords . (show <$>)) . rows
 
-cols :: Board a -> [[Position a]]
-cols = transpose . rows
-
 createBoard :: [[a]] -> Board a
 createBoard = Board . map (Position . Left <$>)
 
 hasWon :: Board a -> Bool
-hasWon = ((||) `on` any rights) <$> rows <*> cols
+hasWon = ((||) `on` any rights) <$> rows <*> transpose . rows
   where rights = all (isRight . value)
 
 select :: Eq a => a -> Board a -> Board a
