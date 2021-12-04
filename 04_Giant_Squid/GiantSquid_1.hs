@@ -22,29 +22,24 @@ hasWon = ((||) `on` any rights) <$> rows <*> transpose . rows
   where rights = all (isRight . value)
 
 select :: Eq a => a -> Board a -> Board a
-select val = Board . map (spos val <$>) . rows
-  where spos val p@(Position (Left v))
+select val = Board . map (spos <$>) . rows
+  where spos p@(Position (Left v))
           | v == val  = Position (Right v)
           | otherwise = p
-        spos _ p = p
-
-score :: Num a => a -> Board a -> Maybe a
-score last board  | hasWon board  = Just $ last * sum (unmarked board)
-                  | otherwise     = Nothing
-  where unmarked = concatMap ((fromLeft 0 . value) <$>) . rows
+        spos p = p
 
 firstWinningScore :: (Eq a, Num a) => [a] -> [Board a] -> a
 firstWinningScore input boards =
   let moves       = scanl draw (boards, 0) input
-      (bs, last)  = fromJust (find (any hasWon . fst) moves)
-      winner      = fromJust (find hasWon bs)
-  in  fromJust $ score last winner
-  where draw (bs,_) m = (map (select m) bs, m)
+      (bs, last)  = fromJust $ find (any hasWon . fst) moves
+  in  last * sum (unmarked $ fromJust $ find hasWon bs)
+  where draw (bs,_) i = (map (select i) bs, i)
+        unmarked      = concatMap ((fromLeft 0 . value) <$>) . rows
 
 parse :: String -> ([Int], [Board Int])
-parse s = let (is:bs) = linesBy null (lines s)
-              input   = map read (splitOn "," (head is))
-              boards  = map (createBoard . map ((read <$>) . words)) bs
-          in  (input, boards)
+parse = ((,) <$> toInput <*> toBoards) . splitWhen null . lines
+  where toInput   = map read . splitOn "," . head . head
+        toBoards  = map (createBoard . map ((read <$>) . words)) . tail
 
+main :: IO ()
 main = interact $ show . uncurry firstWinningScore . parse
