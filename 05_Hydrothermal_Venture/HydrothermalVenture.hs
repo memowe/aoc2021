@@ -1,3 +1,5 @@
+{-# LANGUAGE TupleSections #-}
+
 import Data.List.Split
 import qualified Data.Map as M
 import Data.Function
@@ -5,17 +7,28 @@ import Data.Function
 type Coord  = (Int, Int)
 type Line   = (Coord, Coord)
 
-isRect, isHorizontal, isVertical :: Line -> Bool
-isRect        = (||) <$> isHorizontal <*> isVertical
-isHorizontal  = uncurry ((==) `on` snd)
-isVertical    = uncurry ((==) `on` fst)
+lineDx, lineDy :: Line -> Int
+lineDx = abs . uncurry ((-) `on` fst)
+lineDy = abs . uncurry ((-) `on` snd)
 
-rectCoords :: Line -> [Coord]
-rectCoords ((x1,y1),(x2,y2)) = (,)  <$> [min x1 x2 .. max x1 x2]
-                                    <*> [min y1 y2 .. max y1 y2]
+isHorizontal, isVertical :: Line -> Bool
+isHorizontal  = (== 0) . lineDy
+isVertical    = (== 0) . lineDx
+
+horiCoords, vertiCoords :: Line -> [Coord]
+horiCoords  ((x1,y),(x2,_))   = (,y) <$> range x1 x2
+vertiCoords ((x,y1),(_,y2))   = (x,) <$> range y1 y2
+
+coords :: Line -> [Coord]
+coords line | isHorizontal  line  = horiCoords  line
+            | isVertical    line  = vertiCoords line
+            | otherwise           = error "Invalid line!"
+
+range :: (Enum a, Ord a) => a -> a -> [a]
+range a b = if a <= b then [a..b] else reverse [b..a]
 
 countCoords :: [Line] -> M.Map Coord Int
-countCoords = foldr add M.empty . concatMap rectCoords
+countCoords = foldr add M.empty . concatMap coords
   where add = flip (M.insertWith (+)) 1
 
 findMultiCoords :: [Line] -> [Coord]
@@ -25,4 +38,5 @@ parse :: String -> [Line]
 parse = map (p " -> " $ p "," read) . lines
   where p s r = ((,) <$> head <*> head . tail) . map r . splitOn s
 
-main = interact $ show . length . findMultiCoords . filter isRect . parse
+main = interact $ show . length . findMultiCoords . onlyRect . parse
+  where onlyRect = filter $ (||) <$> isHorizontal <*> isVertical
