@@ -29,17 +29,20 @@ applyFold o (Fold FoldLeft i) =
 parser :: ReadP (Origami, [Fold])
 parser = do pairs <- many pair
             char '\n'
-            folds <- many foldP
+            folds <- many fold
             return (S.fromList pairs, folds)
   where num   = read <$> munch1 isDigit
         pair  = do  x <- num
-                    y <- between (char ',') (char '\n') num
+                    char ','
+                    y <- num
+                    char '\n'
                     return (x,y)
-        foldP = do  string "fold along "
-                    c <- char 'x' +++ char 'y'
-                    let dir = if c == 'x' then FoldLeft else FoldUp
-                    i <- between (char '=') (char '\n') num
-                    return $ Fold dir i
+        fold  = do  string "fold along "
+                    dir <- char 'x' +++ char 'y'
+                    char '='
+                    i <- num
+                    char '\n'
+                    return $ Fold (if dir == 'x' then FoldLeft else FoldUp) i
 
 main = interact $ showOrigami . uncurry (foldl applyFold) . parse
   where parse = fst . last . readP_to_S parser
